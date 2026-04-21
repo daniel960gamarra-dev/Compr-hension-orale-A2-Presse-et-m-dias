@@ -277,13 +277,25 @@ export default function App() {
                     </h4>
                     <p className="text-xs text-slate-400 font-bold uppercase tracking-widest mb-3">Lien direct audio (MP3)</p>
                     <div className="space-y-3">
-                      <input 
-                        type="text" 
-                        value={audioUrl}
-                        onChange={(e) => updateAudioUrl(e.target.value)}
-                        placeholder="https://exemple.com/audio.mp3"
-                        className={`w-full bg-slate-50 border rounded-xl p-4 text-sm font-medium focus:ring-2 focus:ring-indigo-500 focus:bg-white outline-none transition-all placeholder:text-slate-300 ${audioError ? 'border-red-200' : 'border-slate-100'}`}
-                      />
+                      <div className="flex gap-2">
+                        <input 
+                          type="text" 
+                          value={audioUrl}
+                          onChange={(e) => updateAudioUrl(e.target.value)}
+                          placeholder="https://exemple.com/audio.mp3"
+                          className={`flex-1 bg-slate-50 border rounded-xl p-4 text-sm font-medium focus:ring-2 focus:ring-indigo-500 focus:bg-white outline-none transition-all placeholder:text-slate-300 ${audioError ? 'border-red-200' : 'border-slate-100'}`}
+                        />
+                        <button 
+                          onClick={() => {
+                            const defaultUrl = 'https://drive.google.com/uc?export=download&id=1GQTlW08s4Igqyv7_fesfKXA2JhGvQEeD';
+                            updateAudioUrl(defaultUrl);
+                          }}
+                          className="px-4 py-2 bg-slate-100 text-slate-500 rounded-xl hover:bg-slate-200 transition-colors flex items-center justify-center shrink-0"
+                          title="Restablecer enlace original"
+                        >
+                          <RotateCcw className="w-4 h-4" />
+                        </button>
+                      </div>
                       {audioStatus === 'loading' && <p className="text-[10px] text-indigo-500 font-bold animate-pulse uppercase tracking-wider">Chargement de l'audio...</p>}
                       {audioStatus === 'ready' && <p className="text-[10px] text-emerald-500 font-bold uppercase tracking-wider">Audio prêt !</p>}
                       {audioStatus === 'error' && <p className="text-[10px] text-red-500 font-bold uppercase tracking-wider">Erreur de lien</p>}
