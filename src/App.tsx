@@ -37,7 +37,7 @@ export default function App() {
   const [userAnswers, setUserAnswers] = useState<Record<number, string | string[]>>({});
   const [showResults, setShowResults] = useState(false);
   const [history, setHistory] = useState<QuizResult[]>([]);
-  const [audioUrl, setAudioUrl] = useState<string>('https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3'); // Placeholder
+  const [audioUrl, setAudioUrl] = useState<string>('https://drive.google.com/uc?export=download&id=1GQTlW08s4Igqyv7_fesfKXA2JhGvQEeD'); // Placeholder
   const [isPlaying, setIsPlaying] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
   const [audioProgress, setAudioProgress] = useState(0);
@@ -181,7 +181,7 @@ export default function App() {
           </div>
           <div>
             <h1 className="text-lg font-bold text-slate-800 leading-tight">Eco-Audition</h1>
-            <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest">Niveau B1 • Module Écoute</p>
+            <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest">Niveau A1-Niveau A2 • Module Écoute</p>
           </div>
         </div>
 
