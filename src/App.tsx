@@ -286,6 +286,13 @@ export default function App() {
                           className={`flex-1 bg-slate-50 border rounded-xl p-4 text-sm font-medium focus:ring-2 focus:ring-indigo-500 focus:bg-white outline-none transition-all placeholder:text-slate-300 ${audioError ? 'border-red-200' : 'border-slate-100'}`}
                         />
                         <button 
+                          onClick={() => window.open(audioUrl, '_blank')}
+                          className="px-4 py-2 bg-slate-100 text-slate-500 rounded-xl hover:bg-slate-200 transition-colors flex items-center justify-center shrink-0"
+                          title="Probar enlace en pestaña nueva"
+                        >
+                          <ChevronRight className="w-4 h-4 ml-0.5" />
+                        </button>
+                        <button 
                           onClick={() => {
                             const defaultUrl = 'https://drive.google.com/uc?export=download&id=1GQTlW08s4Igqyv7_fesfKXA2JhGvQEeD';
                             updateAudioUrl(defaultUrl);
@@ -298,7 +305,14 @@ export default function App() {
                       </div>
                       {audioStatus === 'loading' && <p className="text-[10px] text-indigo-500 font-bold animate-pulse uppercase tracking-wider">Chargement de l'audio...</p>}
                       {audioStatus === 'ready' && <p className="text-[10px] text-emerald-500 font-bold uppercase tracking-wider">Audio prêt !</p>}
-                      {audioStatus === 'error' && <p className="text-[10px] text-red-500 font-bold uppercase tracking-wider">Erreur de lien</p>}
+                      {audioStatus === 'error' && (
+                        <div className="space-y-2">
+                          <p className="text-[10px] text-red-500 font-bold uppercase tracking-wider">Erreur de lien</p>
+                          <p className="text-[9px] text-red-400 font-medium leading-tight">
+                            Google Drive bloquea a veces el acceso directo. Si al probar el enlace arriba ves un aviso de "Analizar virus", el reproductor no funcionará.
+                          </p>
+                        </div>
+                      )}
                     </div>
                     <p className="text-[10px] text-slate-400 mt-4 leading-relaxed font-medium">
                       * Enseignant : Le lien doit être **direct** (finissant par .mp3). <br/>
