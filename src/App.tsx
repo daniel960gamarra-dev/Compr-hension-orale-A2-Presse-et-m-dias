@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { useState, useEffect, Key } from 'react';
+import { useState, useEffect, Key, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { 
   Play, 
@@ -40,7 +40,11 @@ export default function App() {
   const [audioUrl, setAudioUrl] = useState<string>('https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3'); // Placeholder
   const [isPlaying, setIsPlaying] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
-  const [audioRef, setAudioRef] = useState<HTMLAudioElement | null>(null);
+  const [audioProgress, setAudioProgress] = useState(0);
+  const [audioDuration, setAudioDuration] = useState(0);
+  const [audioError, setAudioError] = useState<string | null>(null);
+  const [audioStatus, setAudioStatus] = useState<'idle' | 'loading' | 'ready' | 'error'>('idle');
+  const audioElementRef = useRef<HTMLAudioElement | null>(null);
 
   useEffect(() => {
     const savedHistory = localStorage.getItem('eco_audition_history');
@@ -55,24 +59,55 @@ export default function App() {
   }, []);
 
   useEffect(() => {
-    if (audioRef) {
-      if (isPlaying) {
-        audioRef.play().catch(e => console.log("Auto-play blocked or error:", e));
-      } else {
-        audioRef.pause();
-      }
+    const audio = audioElementRef.current;
+    if (!audio) return;
+
+    if (isPlaying) {
+      audio.play().catch(e => {
+        console.error("Audio play error:", e);
+        if (state === 'quiz') setAudioError("Impossible de lire l'audio. Vérifiez que le lien est direct.");
+        setIsPlaying(false);
+      });
+    } else {
+      audio.pause();
     }
-  }, [isPlaying, audioRef]);
+  }, [isPlaying, state]);
 
   useEffect(() => {
-    if (audioRef) {
-      audioRef.muted = isMuted;
+    if (audioElementRef.current) {
+      audioElementRef.current.muted = isMuted;
     }
-  }, [isMuted, audioRef]);
+  }, [isMuted]);
 
   const updateAudioUrl = (url: string) => {
     setAudioUrl(url);
     localStorage.setItem('eco_audition_audio', url);
+    setIsPlaying(false);
+    setAudioError(null);
+    setAudioStatus('loading');
+    if (audioElementRef.current) {
+      audioElementRef.current.load();
+    }
+  };
+
+  const handleTimeUpdate = () => {
+    if (audioElementRef.current) {
+      const progress = (audioElementRef.current.currentTime / audioElementRef.current.duration) * 100;
+      setAudioProgress(isNaN(progress) ? 0 : progress);
+    }
+  };
+
+  const handleLoadedMetadata = () => {
+    if (audioElementRef.current) {
+      setAudioDuration(audioElementRef.current.duration);
+      setAudioStatus('ready');
+      setAudioError(null);
+    }
+  };
+
+  const handleAudioError = () => {
+    setAudioStatus('error');
+    setAudioError("Erreur : Le lien fourni n'est pas un fichier audio valide ou l'accès est bloqué.");
     setIsPlaying(false);
   };
 
@@ -188,8 +223,14 @@ export default function App() {
       <main className="flex-1 flex overflow-hidden">
         <audio 
           src={audioUrl} 
-          ref={(node) => setAudioRef(node)}
+          ref={audioElementRef}
           onEnded={() => setIsPlaying(false)}
+          onTimeUpdate={handleTimeUpdate}
+          onLoadedMetadata={handleLoadedMetadata}
+          onError={handleAudioError}
+          onCanPlay={() => setAudioStatus('ready')}
+          onWaiting={() => setAudioStatus('loading')}
+          onPlaying={() => setAudioStatus('ready')}
           className="hidden"
         />
 
@@ -235,15 +276,21 @@ export default function App() {
                       Source de données
                     </h4>
                     <p className="text-xs text-slate-400 font-bold uppercase tracking-widest mb-3">Lien direct audio (MP3)</p>
-                    <input 
-                      type="text" 
-                      value={audioUrl}
-                      onChange={(e) => updateAudioUrl(e.target.value)}
-                      placeholder="https://exemple.com/audio.mp3"
-                      className="w-full bg-slate-50 border border-slate-100 rounded-xl p-4 text-sm font-medium focus:ring-2 focus:ring-indigo-500 focus:bg-white outline-none transition-all placeholder:text-slate-300"
-                    />
+                    <div className="space-y-3">
+                      <input 
+                        type="text" 
+                        value={audioUrl}
+                        onChange={(e) => updateAudioUrl(e.target.value)}
+                        placeholder="https://exemple.com/audio.mp3"
+                        className={`w-full bg-slate-50 border rounded-xl p-4 text-sm font-medium focus:ring-2 focus:ring-indigo-500 focus:bg-white outline-none transition-all placeholder:text-slate-300 ${audioError ? 'border-red-200' : 'border-slate-100'}`}
+                      />
+                      {audioStatus === 'loading' && <p className="text-[10px] text-indigo-500 font-bold animate-pulse uppercase tracking-wider">Chargement de l'audio...</p>}
+                      {audioStatus === 'ready' && <p className="text-[10px] text-emerald-500 font-bold uppercase tracking-wider">Audio prêt !</p>}
+                      {audioStatus === 'error' && <p className="text-[10px] text-red-500 font-bold uppercase tracking-wider">Erreur de lien</p>}
+                    </div>
                     <p className="text-[10px] text-slate-400 mt-4 leading-relaxed font-medium">
-                      * Enseignant : Vous pouvez coller n'importe quel lien direct vers un fichier audio public pour changer le contenu de cet exercice.
+                      * Enseignant : Le lien doit être **direct** (finissant par .mp3). <br/>
+                      Si vous utilisez Google Drive ou Dropbox, le lien fourni par défaut ne fonctionnera pas car ce n'est pas un lien direct.
                     </p>
                   </div>
                 </div>
@@ -333,11 +380,9 @@ export default function App() {
                       </span>
                     </div>
                     <div className="h-2 bg-slate-100 rounded-full overflow-hidden">
-                      <motion.div 
-                        className="h-full bg-indigo-600 rounded-full shadow-[0_0_8px_rgba(79,70,229,0.4)]"
-                        initial={{ width: 0 }}
-                        animate={{ width: isPlaying ? '100%' : '0%' }}
-                        transition={{ duration: 180, ease: 'linear' }}
+                      <div 
+                        className="h-full bg-indigo-600 rounded-full shadow-[0_0_8px_rgba(79,70,229,0.4)] transition-all duration-300"
+                        style={{ width: `${audioProgress}%` }}
                       />
                     </div>
                   </div>
@@ -352,6 +397,15 @@ export default function App() {
 
                 {/* Question Area */}
                 <div className="flex-1 bg-white rounded-3xl border border-slate-200 shadow-sm flex flex-col overflow-hidden">
+                  {audioError && (
+                    <div className="bg-red-50 border-b border-red-100 p-4 text-red-600 text-xs font-bold flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <XCircle className="w-4 h-4" />
+                        {audioError}
+                      </div>
+                      <button onClick={() => setAudioError(null)} className="opacity-50 hover:opacity-100">Ignorer</button>
+                    </div>
+                  )}
                   <div className="px-8 py-5 border-b border-slate-100 bg-slate-50/50 flex justify-between items-center shrink-0">
                     <div>
                       <h3 className="font-bold text-slate-800 tracking-tight">{quizData[currentSectionIndex].title}</h3>
