@@ -265,59 +265,10 @@ export default function App() {
                     </div>
                   </button>
 
-                  <div className="bg-white rounded-3xl p-8 border border-slate-200 max-w-sm w-full text-left shadow-sm mt-8 relative overflow-hidden">
-                    <div className="absolute top-0 right-0 p-4 opacity-5">
-                      <Plus className="w-24 h-24" />
-                    </div>
-                    <h4 className="font-bold text-slate-800 mb-4 flex items-center gap-2 uppercase tracking-widest text-xs">
-                      <span className="w-6 h-6 bg-slate-100 rounded flex items-center justify-center text-slate-400">
-                        <Plus className="w-4 h-4" />
-                      </span>
-                      Source de données
-                    </h4>
-                    <p className="text-xs text-slate-400 font-bold uppercase tracking-widest mb-3">Lien direct audio (MP3)</p>
-                    <div className="space-y-3">
-                      <div className="flex gap-2">
-                        <input 
-                          type="text" 
-                          value={audioUrl}
-                          onChange={(e) => updateAudioUrl(e.target.value)}
-                          placeholder="https://exemple.com/audio.mp3"
-                          className={`flex-1 bg-slate-50 border rounded-xl p-4 text-sm font-medium focus:ring-2 focus:ring-indigo-500 focus:bg-white outline-none transition-all placeholder:text-slate-300 ${audioError ? 'border-red-200' : 'border-slate-100'}`}
-                        />
-                        <button 
-                          onClick={() => window.open(audioUrl, '_blank')}
-                          className="px-4 py-2 bg-slate-100 text-slate-500 rounded-xl hover:bg-slate-200 transition-colors flex items-center justify-center shrink-0"
-                          title="Probar enlace en pestaña nueva"
-                        >
-                          <ChevronRight className="w-4 h-4 ml-0.5" />
-                        </button>
-                        <button 
-                          onClick={() => {
-                            const defaultUrl = '/flashinfoa2.mp3';
-                            updateAudioUrl(defaultUrl);
-                          }}
-                          className="px-4 py-2 bg-slate-100 text-slate-500 rounded-xl hover:bg-slate-200 transition-colors flex items-center justify-center shrink-0"
-                          title="Restablecer enlace original"
-                        >
-                          <RotateCcw className="w-4 h-4" />
-                        </button>
-                      </div>
-                      {audioStatus === 'loading' && <p className="text-[10px] text-indigo-500 font-bold animate-pulse uppercase tracking-wider">Chargement de l'audio...</p>}
-                      {audioStatus === 'ready' && <p className="text-[10px] text-emerald-500 font-bold uppercase tracking-wider">Audio prêt !</p>}
-                      {audioStatus === 'error' && (
-                        <div className="space-y-2">
-                          <p className="text-[10px] text-red-500 font-bold uppercase tracking-wider">Erreur de lien</p>
-                          <p className="text-[9px] text-red-400 font-medium leading-tight">
-                            Google Drive bloquea a veces el acceso directo. Si al probar el enlace arriba ves un aviso de "Analizar virus", el reproductor no funcionará.
-                          </p>
-                        </div>
-                      )}
-                    </div>
-                    <p className="text-[10px] text-slate-400 mt-4 leading-relaxed font-medium">
-                      * Enseignant : Le lien doit être **direct** (finissant par .mp3). <br/>
-                      Si vous utilisez Google Drive ou Dropbox, le lien fourni par défaut ne fonctionnera pas car ce n'est pas un lien direct.
-                    </p>
+                  <div className="pt-12 text-[10px] text-slate-400 font-bold uppercase tracking-widest flex items-center gap-3">
+                    <div className="w-8 h-px bg-slate-200"></div>
+                    Prêt pour l'examen
+                    <div className="w-8 h-px bg-slate-200"></div>
                   </div>
                 </div>
               </div>
