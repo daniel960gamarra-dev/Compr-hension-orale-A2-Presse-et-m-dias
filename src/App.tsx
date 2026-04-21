@@ -37,7 +37,7 @@ export default function App() {
   const [userAnswers, setUserAnswers] = useState<Record<number, string | string[]>>({});
   const [showResults, setShowResults] = useState(false);
   const [history, setHistory] = useState<QuizResult[]>([]);
-  const [audioUrl, setAudioUrl] = useState<string>('https://drive.google.com/uc?export=download&id=1GQTlW08s4Igqyv7_fesfKXA2JhGvQEeD'); // Placeholder
+  const [audioUrl, setAudioUrl] = useState<string>('/flashinfoa2.mp3'); // Placeholder
   const [isPlaying, setIsPlaying] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
   const [audioProgress, setAudioProgress] = useState(0);
@@ -294,7 +294,7 @@ export default function App() {
                         </button>
                         <button 
                           onClick={() => {
-                            const defaultUrl = 'https://drive.google.com/uc?export=download&id=1GQTlW08s4Igqyv7_fesfKXA2JhGvQEeD';
+                            const defaultUrl = '/flashinfoa2.mp3';
                             updateAudioUrl(defaultUrl);
                           }}
                           className="px-4 py-2 bg-slate-100 text-slate-500 rounded-xl hover:bg-slate-200 transition-colors flex items-center justify-center shrink-0"
