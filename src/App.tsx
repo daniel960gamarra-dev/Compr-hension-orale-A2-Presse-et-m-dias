@@ -138,38 +138,54 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-[#F5F5F4] text-[#1C1917] font-sans selection:bg-[#E7E5E4]">
-      {/* Header */}
-      <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-[#E7E5E4] px-6 py-4">
-        <div className="max-w-4xl mx-auto flex justify-between items-center">
-          <div 
-            className="flex items-center gap-2 cursor-pointer"
-            onClick={() => setState('home')}
-          >
-            <div className="bg-[#1C1917] p-1.5 rounded-lg">
-              <BookOpen className="text-white w-5 h-5" />
-            </div>
-            <h1 className="text-xl font-semibold tracking-tight">Eco-Audition</h1>
+    <div className="h-screen flex flex-col bg-slate-50 font-sans text-slate-900 overflow-hidden select-none">
+      <header className="h-16 bg-white border-b border-slate-200 px-8 flex items-center justify-between shrink-0 shadow-sm z-50">
+        <div className="flex items-center gap-4 cursor-pointer" onClick={() => setState('home')}>
+          <div className="w-10 h-10 bg-indigo-600 rounded-lg flex items-center justify-center">
+            <BookOpen className="text-white w-6 h-6" />
           </div>
-          
-          <nav className="flex items-center gap-6">
+          <div>
+            <h1 className="text-lg font-bold text-slate-800 leading-tight">Eco-Audition</h1>
+            <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest">Niveau B1 • Module Écoute</p>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-8">
+          <nav className="hidden md:flex items-center gap-6">
             <button 
               onClick={() => setState('home')}
-              className={`text-sm font-medium transition-colors ${state === 'home' || state === 'quiz' ? 'text-[#1C1917]' : 'text-[#78716C] hover:text-[#1C1917]'}`}
+              className={`text-xs font-bold uppercase tracking-widest transition-colors ${state === 'home' || state === 'quiz' ? 'text-indigo-600' : 'text-slate-400 hover:text-slate-600'}`}
             >
               Pratique
             </button>
             <button 
               onClick={() => setState('history')}
-              className={`text-sm font-medium transition-colors ${state === 'history' ? 'text-[#1C1917]' : 'text-[#78716C] hover:text-[#1C1917]'}`}
+              className={`text-xs font-bold uppercase tracking-widest transition-colors ${state === 'history' ? 'text-indigo-600' : 'text-slate-400 hover:text-slate-600'}`}
             >
               Progrès
             </button>
           </nav>
+          
+          <div className="h-8 w-px bg-slate-200 hidden md:block" />
+
+          {state === 'quiz' && !showResults && (
+            <div className="flex items-center gap-6">
+              <div className="text-right hidden sm:block">
+                <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Score actuel</div>
+                <div className="text-xl font-mono font-bold text-indigo-600">{calculateScore()} / {totalQuestions}</div>
+              </div>
+              <button 
+                onClick={finishQuiz}
+                className="px-5 py-2 bg-indigo-600 text-white rounded-full text-xs font-bold uppercase tracking-widest hover:bg-indigo-700 transition-colors shadow-lg shadow-indigo-100"
+              >
+                Terminer l'exercice
+              </button>
+            </div>
+          )}
         </div>
       </header>
 
-      <main className="max-w-4xl mx-auto px-6 py-12">
+      <main className="flex-1 flex overflow-hidden">
         <audio 
           src={audioUrl} 
           ref={(node) => setAudioRef(node)}
@@ -181,40 +197,55 @@ export default function App() {
           {state === 'home' && (
             <motion.div 
               key="home"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              className="text-center py-20"
+              initial={{ opacity: 0, scale: 0.98 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 1.02 }}
+              className="flex-1 overflow-y-auto p-12 flex flex-col items-center justify-center text-center"
             >
-              <h2 className="text-5xl font-light mb-6 tracking-tight">Entraînez votre oreille.</h2>
-              <p className="text-[#78716C] text-lg max-w-xl mx-auto mb-10 leading-relaxed">
-                Préparez-vous à votre examen de compréhension orale avec notre plateforme interactive. 
-                Sujets d'actualité, environnement et plus encore.
-              </p>
-              
-              <div className="flex flex-col gap-8">
-                <button 
-                  onClick={startQuiz}
-                  className="bg-[#1C1917] text-white px-8 py-4 rounded-full font-medium text-lg hover:bg-[#44403C] transition-all transform hover:scale-105 shadow-lg shadow-black/10 flex items-center gap-2 mx-auto"
-                >
-                  Commencer l'exercice <ChevronRight className="w-5 h-5" />
-                </button>
+              <div className="max-w-xl space-y-8">
+                <div className="inline-block px-4 py-1.5 bg-indigo-50 text-indigo-600 rounded-full text-xs font-bold uppercase tracking-widest mb-4">
+                  Nouvel exercice disponible
+                </div>
+                <h2 className="text-5xl font-extrabold text-slate-800 tracking-tight leading-tight">
+                  Pratiquez votre <span className="text-indigo-600">Compréhension Orale</span>.
+                </h2>
+                <p className="text-slate-500 text-lg leading-relaxed">
+                  Une simulation d'examen complète sur le thème de l'environnement, avec feedback instantané et suivi détaillé de vos progrès.
+                </p>
+                
+                <div className="flex flex-col gap-6 items-center pt-8">
+                  <button 
+                    onClick={startQuiz}
+                    className="group bg-indigo-600 text-white pl-8 pr-6 py-4 rounded-2xl font-bold text-lg hover:bg-indigo-700 transition-all transform hover:-translate-y-1 shadow-2xl shadow-indigo-200 flex items-center gap-4"
+                  >
+                    Lancer l'exercice 
+                    <div className="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center group-hover:bg-white/30 transition-colors">
+                      <ChevronRight className="w-5 h-5" />
+                    </div>
+                  </button>
 
-                <div className="mt-12 bg-white rounded-2xl p-6 border border-[#E7E5E4] max-w-md mx-auto text-left shadow-sm">
-                  <h4 className="font-semibold mb-2 flex items-center gap-2">
-                    <Plus className="w-4 h-4" /> Espace Enseignant
-                  </h4>
-                  <p className="text-sm text-[#78716C] mb-4">Lien vers le fichier audio (MP3) :</p>
-                  <input 
-                    type="text" 
-                    value={audioUrl}
-                    onChange={(e) => updateAudioUrl(e.target.value)}
-                    placeholder="https://exemple.com/audio.mp3"
-                    className="w-full bg-[#F5F5F4] border-none rounded-xl p-3 text-sm focus:ring-1 focus:ring-[#1C1917] outline-none"
-                  />
-                  <p className="text-[10px] text-[#A8A29E] mt-2 italic">
-                    *Le fichier doit être accessible publiquement (URL directe).
-                  </p>
+                  <div className="bg-white rounded-3xl p-8 border border-slate-200 max-w-sm w-full text-left shadow-sm mt-8 relative overflow-hidden">
+                    <div className="absolute top-0 right-0 p-4 opacity-5">
+                      <Plus className="w-24 h-24" />
+                    </div>
+                    <h4 className="font-bold text-slate-800 mb-4 flex items-center gap-2 uppercase tracking-widest text-xs">
+                      <span className="w-6 h-6 bg-slate-100 rounded flex items-center justify-center text-slate-400">
+                        <Plus className="w-4 h-4" />
+                      </span>
+                      Source de données
+                    </h4>
+                    <p className="text-xs text-slate-400 font-bold uppercase tracking-widest mb-3">Lien direct audio (MP3)</p>
+                    <input 
+                      type="text" 
+                      value={audioUrl}
+                      onChange={(e) => updateAudioUrl(e.target.value)}
+                      placeholder="https://exemple.com/audio.mp3"
+                      className="w-full bg-slate-50 border border-slate-100 rounded-xl p-4 text-sm font-medium focus:ring-2 focus:ring-indigo-500 focus:bg-white outline-none transition-all placeholder:text-slate-300"
+                    />
+                    <p className="text-[10px] text-slate-400 mt-4 leading-relaxed font-medium">
+                      * Enseignant : Vous pouvez coller n'importe quel lien direct vers un fichier audio public pour changer le contenu de cet exercice.
+                    </p>
+                  </div>
                 </div>
               </div>
             </motion.div>
@@ -223,126 +254,202 @@ export default function App() {
           {state === 'quiz' && !showResults && (
             <motion.div 
               key="quiz"
-              initial={{ opacity: 0, scale: 0.98 }}
-              animate={{ opacity: 1, scale: 1 }}
-              className="space-y-8"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="flex-1 flex h-full p-6 gap-6 overflow-hidden"
             >
-              {/* Audio Controls */}
-              <div className="bg-white rounded-3xl p-6 border border-[#E7E5E4] shadow-sm flex flex-col md:flex-row items-center gap-6">
-                <div className="flex items-center gap-4">
+              {/* Sidebar */}
+              <aside className="w-72 flex flex-col gap-6 shrink-0 h-full overflow-y-auto">
+                <div className="bg-white rounded-3xl border border-slate-200 p-6 shadow-sm">
+                  <h2 className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-6">Progression</h2>
+                  <div className="space-y-6">
+                    {quizData.map((section, idx) => (
+                      <div 
+                        key={section.id} 
+                        className={`flex items-center gap-4 transition-all ${
+                          idx === currentSectionIndex 
+                            ? 'opacity-100 scale-105' 
+                            : idx < currentSectionIndex 
+                              ? 'opacity-60' 
+                              : 'opacity-40'
+                        }`}
+                      >
+                        <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-xs shrink-0 transition-colors ${
+                          idx === currentSectionIndex 
+                            ? 'bg-indigo-600 text-white ring-4 ring-indigo-50' 
+                            : idx < currentSectionIndex 
+                              ? 'bg-emerald-100 text-emerald-600' 
+                              : 'bg-slate-100 text-slate-400'
+                        }`}>
+                          {idx < currentSectionIndex ? (
+                            <CheckCircle2 className="w-5 h-5" />
+                          ) : (
+                            `0${idx + 1}`
+                          )}
+                        </div>
+                        <span className={`text-sm tracking-tight ${idx === currentSectionIndex ? 'font-bold text-indigo-600' : 'font-medium text-slate-600'}`}>
+                          {section.title.split(' – ')[0]}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                  
+                  <div className="mt-10 pt-8 border-t border-slate-100 text-center">
+                    <div className="text-4xl font-black text-slate-800 tracking-tighter">{calculateScore()} <span className="text-lg text-slate-300 font-bold">/ {totalQuestions}</span></div>
+                    <div className="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-1">Points estimés</div>
+                  </div>
+                </div>
+
+                <div className="bg-slate-800 rounded-3xl p-6 text-white shadow-xl relative overflow-hidden">
+                  <div className="absolute -top-4 -right-4 w-20 h-20 bg-indigo-500 rounded-full opacity-10 blur-2xl" />
+                  <h3 className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-4 flex items-center gap-2">
+                    <div className="w-1.5 h-1.5 bg-indigo-400 rounded-full animate-pulse" />
+                    Consignes
+                  </h3>
+                  <p className="text-sm leading-relaxed text-slate-300 font-medium">
+                    {currentSectionIndex === 0 && "Identifiez la nature du document, le nombre d'intervenants et le thème général."}
+                    {currentSectionIndex === 1 && "Portez une attention particulière aux détails : météo, activités scolaires et score sportif."}
+                    {currentSectionIndex === 2 && "Saisissez précisément les dates, lieux et termes techniques manquants."}
+                  </p>
+                </div>
+              </aside>
+
+              {/* Main Quiz Area */}
+              <section className="flex-1 flex flex-col gap-6 overflow-hidden">
+                {/* Audio Component */}
+                <div className="bg-white rounded-3xl border border-slate-200 p-5 shadow-sm flex items-center gap-6">
                   <button 
                     onClick={() => setIsPlaying(!isPlaying)}
-                    className="w-14 h-14 bg-[#1C1917] text-white rounded-full flex items-center justify-center hover:bg-[#44403C] transition-colors"
+                    className="w-12 h-12 bg-indigo-600 rounded-2xl flex items-center justify-center text-white shrink-0 hover:scale-105 active:scale-95 transition-all shadow-lg shadow-indigo-100"
                   >
-                    {isPlaying ? <Pause className="fill-white" /> : <Play className="fill-white ml-1" />}
-                  </button>
-                  <div>
-                    <p className="text-xs font-bold uppercase tracking-widest text-[#A8A29E] mb-1">Document Audio</p>
-                    <p className="font-semibold">Examen: Compréhension Globale & Détailée</p>
-                  </div>
-                </div>
-                
-                <div className="flex-1 w-full flex items-center gap-4">
-                  <div className="flex-1 h-1.5 bg-[#F5F5F4] rounded-full overflow-hidden relative">
-                    <motion.div 
-                      className="absolute inset-y-0 left-0 bg-[#1C1917]"
-                      initial={{ width: 0 }}
-                      animate={{ width: isPlaying ? '100%' : '0%' }}
-                      transition={{ duration: 180, ease: 'linear' }} // Simulated 3 min audio
-                    />
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <button onClick={() => setIsMuted(!isMuted)}>
-                      {isMuted ? <VolumeX className="w-5 h-5 text-[#A8A29E]" /> : <Volume2 className="w-5 h-5 text-[#A8A29E]" />}
-                    </button>
-                  </div>
-                </div>
-              </div>
-
-              {/* Quiz Section */}
-              <div className="space-y-6">
-                <div className="flex justify-between items-end">
-                  <div>
-                    <p className="text-sm font-bold uppercase tracking-widest text-[#A8A29E] mb-2">Section {currentSectionIndex + 1}/{quizData.length}</p>
-                    <h3 className="text-3xl font-semibold tracking-tight">{quizData[currentSectionIndex].title}</h3>
-                  </div>
-                  <div className="bg-[#E7E5E4] px-4 py-1.5 rounded-full text-sm font-medium">
-                    {quizData[currentSectionIndex].points} Points
-                  </div>
-                </div>
-
-                <div className="space-y-6">
-                  {quizData[currentSectionIndex].questions.map((q) => (
-                    <QuestionCard 
-                      key={q.id} 
-                      question={q} 
-                      value={userAnswers[q.id]} 
-                      onChange={(val) => handleAnswer(q.id, val)} 
-                    />
-                  ))}
-                </div>
-
-                <div className="flex justify-between pt-8 border-t border-[#E7E5E4]">
-                  <button 
-                    disabled={currentSectionIndex === 0}
-                    onClick={() => setCurrentSectionIndex(prev => prev - 1)}
-                    className="flex items-center gap-2 text-sm font-medium disabled:opacity-30 px-4 py-2"
-                  >
-                    <ChevronLeft className="w-4 h-4" /> Précédent
+                    {isPlaying ? <Pause className="fill-white" /> : <Play className="fill-white ml-0.5" />}
                   </button>
                   
-                  {currentSectionIndex < quizData.length - 1 ? (
-                    <button 
-                      onClick={() => setCurrentSectionIndex(prev => prev + 1)}
-                      className="bg-[#1C1917] text-white px-6 py-2 rounded-full text-sm font-medium hover:bg-[#44403C] transition-colors flex items-center gap-2"
-                    >
-                      Suivant <ChevronRight className="w-4 h-4" />
-                    </button>
-                  ) : (
-                    <button 
-                      onClick={finishQuiz}
-                      className="bg-[#1C1917] text-white px-8 py-2 rounded-full text-sm font-medium hover:bg-[#44403C] transition-colors flex items-center gap-2"
-                    >
-                      Terminer <CheckCircle2 className="w-4 h-4" />
-                    </button>
-                  )}
+                  <div className="flex-1 space-y-2">
+                    <div className="flex justify-between items-center">
+                      <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Document Sonore</span>
+                      <span className="text-[10px] font-mono font-bold text-slate-500">
+                        {isPlaying ? 'LECTURE EN COURS' : 'PRÊT À ÉCOUTER'}
+                      </span>
+                    </div>
+                    <div className="h-2 bg-slate-100 rounded-full overflow-hidden">
+                      <motion.div 
+                        className="h-full bg-indigo-600 rounded-full shadow-[0_0_8px_rgba(79,70,229,0.4)]"
+                        initial={{ width: 0 }}
+                        animate={{ width: isPlaying ? '100%' : '0%' }}
+                        transition={{ duration: 180, ease: 'linear' }}
+                      />
+                    </div>
+                  </div>
+
+                  <button 
+                    onClick={() => setIsMuted(!isMuted)}
+                    className={`p-3 rounded-xl transition-colors ${isMuted ? 'bg-slate-100 text-slate-400' : 'hover:bg-slate-100 text-slate-400 hover:text-indigo-600'}`}
+                  >
+                    {isMuted ? <VolumeX className="w-5 h-5" /> : <Volume2 className="w-5 h-5" />}
+                  </button>
                 </div>
-              </div>
+
+                {/* Question Area */}
+                <div className="flex-1 bg-white rounded-3xl border border-slate-200 shadow-sm flex flex-col overflow-hidden">
+                  <div className="px-8 py-5 border-b border-slate-100 bg-slate-50/50 flex justify-between items-center shrink-0">
+                    <div>
+                      <h3 className="font-bold text-slate-800 tracking-tight">{quizData[currentSectionIndex].title}</h3>
+                      <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-0.5">{quizData[currentSectionIndex].points} points à gagner</p>
+                    </div>
+                    <div className="px-3 py-1 bg-indigo-100 text-indigo-700 rounded-full text-[10px] font-black uppercase tracking-wider flex items-center gap-2">
+                      <div className="w-1.5 h-1.5 bg-indigo-600 rounded-full animate-pulse" />
+                      En cours
+                    </div>
+                  </div>
+
+                  <div className="flex-1 overflow-y-auto p-8 space-y-10">
+                    <div className="max-w-3xl mx-auto space-y-8">
+                      {quizData[currentSectionIndex].questions.map((q) => (
+                        <QuestionCard 
+                          key={q.id} 
+                          question={q} 
+                          value={userAnswers[q.id]} 
+                          onChange={(val) => handleAnswer(q.id, val)} 
+                        />
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="p-6 bg-slate-50 border-t border-slate-100 flex justify-between items-center shrink-0">
+                    <button 
+                      disabled={currentSectionIndex === 0}
+                      onClick={() => setCurrentSectionIndex(prev => prev - 1)}
+                      className="px-6 py-3 rounded-2xl text-slate-500 font-bold text-xs uppercase tracking-widest hover:bg-slate-200 disabled:opacity-20 transition-all flex items-center gap-2"
+                    >
+                      <ChevronLeft className="w-4 h-4" /> Précédent
+                    </button>
+                    
+                    <div className="flex gap-4">
+                      {currentSectionIndex < quizData.length - 1 ? (
+                        <button 
+                          onClick={() => setCurrentSectionIndex(prev => prev + 1)}
+                          className="px-10 py-3 bg-indigo-600 text-white rounded-2xl font-bold text-xs uppercase tracking-widest hover:bg-indigo-700 transition-all shadow-xl shadow-indigo-100 flex items-center gap-2"
+                        >
+                          Étape Suivante <ChevronRight className="w-4 h-4" />
+                        </button>
+                      ) : (
+                        <button 
+                          onClick={finishQuiz}
+                          className="px-10 py-3 bg-emerald-600 text-white rounded-2xl font-bold text-xs uppercase tracking-widest hover:bg-emerald-700 transition-all shadow-xl shadow-emerald-100 flex items-center gap-2"
+                        >
+                          Terminer <CheckCircle2 className="w-4 h-4" />
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </section>
             </motion.div>
           )}
 
           {showResults && (
             <motion.div 
               key="results"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="space-y-12 max-w-2xl mx-auto text-center"
+              initial={{ opacity: 0, scale: 1.05 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="flex-1 flex flex-col items-center justify-center p-12 text-center"
             >
-              <div>
-                <Award className="w-16 h-16 mx-auto mb-6 text-[#1C1917]" />
-                <h2 className="text-5xl font-light mb-4">Exercice terminé !</h2>
-                <div className="text-6xl font-bold mb-6 tracking-tighter">
-                  {calculateScore()} <span className="text-[#A8A29E] font-normal text-3xl">/ {totalQuestions}</span>
-                </div>
-                <p className="text-[#78716C] mb-8">
-                  {calculateScore() / totalQuestions >= 0.8 ? "Excellent travail ! Votre compréhension est très précise." : 
-                   calculateScore() / totalQuestions >= 0.5 ? "Bon résultat. Continuez à pratiquer pour améliorer votre score." :
-                   "Un peu plus de pratique vous aidera à mieux saisir les détails."}
+              <div className="w-24 h-24 bg-indigo-100 rounded-3xl flex items-center justify-center mb-8 relative">
+                <Award className="w-12 h-12 text-indigo-600" />
+                <motion.div 
+                  className="absolute inset-0 bg-indigo-400 rounded-3xl"
+                  initial={{ scale: 1, opacity: 0.2 }}
+                  animate={{ scale: 1.5, opacity: 0 }}
+                  transition={{ duration: 2, repeat: Infinity }}
+                />
+              </div>
+              <h2 className="text-5xl font-black text-slate-800 tracking-tighter mb-4">Exercice Terminé</h2>
+              <div className="text-8xl font-black text-indigo-600 tracking-tighter mb-8 flex items-baseline justify-center">
+                {calculateScore()} <span className="text-3xl text-slate-300 ml-4">/ {totalQuestions}</span>
+              </div>
+              
+              <div className="bg-white rounded-3xl p-8 border border-slate-200 max-w-lg mb-10 shadow-sm relative overflow-hidden">
+                <div className={`absolute top-0 left-0 w-2 h-full ${calculateScore() / totalQuestions >= 0.7 ? 'bg-emerald-500' : 'bg-orange-500'}`} />
+                <p className="text-slate-600 leading-relaxed font-medium">
+                  {calculateScore() / totalQuestions >= 0.8 ? "Félicitations ! Vous avez une excellente oreille. Votre niveau de compréhension est très élevé." : 
+                   calculateScore() / totalQuestions >= 0.5 ? "Bon travail ! Vous avez saisi la majeure partie du document sonore." :
+                   "Continuez ainsi. Nous vous conseillons de réécouter le document pour identifier les détails manquants."}
                 </p>
               </div>
 
-              <div className="flex justify-center flex-wrap gap-4">
+              <div className="flex gap-4">
                 <button 
                   onClick={resetQuiz}
-                  className="bg-[#1C1917] text-white px-8 py-3 rounded-full font-medium hover:bg-[#44403C] transition-colors flex items-center gap-2"
+                  className="px-10 py-4 bg-indigo-600 text-white rounded-2xl font-bold text-sm uppercase tracking-widest hover:bg-indigo-700 transition-all shadow-xl shadow-indigo-100 flex items-center gap-3"
                 >
                   <RotateCcw className="w-4 h-4" /> Recommencer
                 </button>
                 <button 
                   onClick={() => setState('history')}
-                  className="border border-[#E7E5E4] px-8 py-3 rounded-full font-medium hover:bg-white transition-colors flex items-center gap-2"
+                  className="px-10 py-4 bg-white border border-slate-200 text-slate-600 rounded-2xl font-bold text-sm uppercase tracking-widest hover:bg-slate-50 transition-all flex items-center gap-3"
                 >
-                  <History className="w-4 h-4" /> Voir mes progrès
+                  <History className="w-4 h-4" /> Mon historique
                 </button>
               </div>
             </motion.div>
@@ -351,55 +458,68 @@ export default function App() {
           {state === 'history' && (
             <motion.div 
               key="history"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              className="space-y-8"
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              className="flex-1 overflow-y-auto p-12 max-w-4xl mx-auto w-full"
             >
-              <div className="flex justify-between items-center">
-                <h3 className="text-3xl font-semibold tracking-tight">Suivi des progrès</h3>
+              <div className="flex justify-between items-end mb-12">
+                <div>
+                  <h3 className="text-4xl font-black text-slate-800 tracking-tighter">Votre progression</h3>
+                  <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mt-1">Historique des sessions locales</p>
+                </div>
                 <button 
                   onClick={() => {
                     localStorage.removeItem('eco_audition_history');
                     setHistory([]);
                   }}
-                  className="text-xs font-bold uppercase tracking-widest text-red-500 hover:text-red-600 transition-colors"
+                  className="text-[10px] font-black uppercase tracking-widest text-red-500 hover:text-red-600 px-4 py-2 hover:bg-red-50 rounded-lg transition-all"
                 >
-                  Effacer l'historique
+                  Réinitialiser les données
                 </button>
               </div>
 
               {history.length === 0 ? (
-                <div className="bg-white rounded-3xl p-12 border border-[#E7E5E4] text-center">
-                  <div className="bg-[#F5F5F4] w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                    <BarChart2 className="w-8 h-8 text-[#A8A29E]" />
+                <div className="bg-white rounded-[40px] p-20 border border-slate-100 text-center shadow-2xl shadow-slate-200/50">
+                  <div className="bg-slate-50 w-24 h-24 rounded-3xl flex items-center justify-center mx-auto mb-8">
+                    <BarChart2 className="w-12 h-12 text-slate-300" />
                   </div>
-                  <p className="text-[#78716C]">Aucun exercice complété pour le moment.</p>
+                  <h4 className="text-2xl font-bold text-slate-800 mb-2">Aucune donnée pour le moment</h4>
+                  <p className="text-slate-400 font-medium mb-10 max-w-xs mx-auto">Complétez votre premier exercice pour commencer à suivre votre progression.</p>
                   <button 
                     onClick={() => setState('home')}
-                    className="mt-6 text-[#1C1917] font-semibold underline underline-offset-4"
+                    className="bg-indigo-600 text-white px-10 py-4 rounded-2xl font-bold uppercase tracking-widest text-xs hover:bg-indigo-700 transition-all"
                   >
-                    Commencer votre premier test
+                    Lancer mon premier test
                   </button>
                 </div>
               ) : (
-                <div className="grid gap-4">
+                <div className="grid gap-6">
                   {history.map((result, idx) => (
-                    <div key={idx} className="bg-white rounded-2xl p-6 border border-[#E7E5E4] flex justify-between items-center transition-all hover:border-[#1C1917]/20 hover:shadow-sm">
-                      <div className="flex items-center gap-4">
-                        <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${result.score / result.total >= 0.7 ? 'bg-green-50 text-green-600' : 'bg-orange-50 text-orange-600'}`}>
-                          <Award className="w-6 h-6" />
+                    <motion.div 
+                      key={idx} 
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: idx * 0.05 }}
+                      className="bg-white rounded-3xl p-8 border border-slate-100 flex justify-between items-center transition-all hover:border-indigo-100 hover:shadow-xl hover:shadow-indigo-500/5 group"
+                    >
+                      <div className="flex items-center gap-6">
+                        <div className={`w-16 h-16 rounded-2xl flex items-center justify-center transition-colors ${result.score / result.total >= 0.7 ? 'bg-emerald-50 text-emerald-500' : 'bg-orange-50 text-orange-500'}`}>
+                          <Award className="w-8 h-8" />
                         </div>
                         <div>
-                          <p className="font-semibold">Score: {result.score} / {result.total}</p>
-                          <p className="text-xs text-[#A8A29E]">{result.date}</p>
+                          <p className="text-xl font-black text-slate-800 tracking-tight">Score: {result.score} / {result.total}</p>
+                          <div className="flex items-center gap-2 mt-1">
+                            <History className="w-3 h-3 text-slate-300" />
+                            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{result.date}</p>
+                          </div>
                         </div>
                       </div>
                       <div className="text-right">
-                        <div className="text-lg font-bold tracking-tight">
+                        <div className="text-4xl font-black tracking-tighter text-indigo-600 group-hover:scale-110 transition-transform">
                           {Math.round((result.score / result.total) * 100)}%
                         </div>
                       </div>
-                    </div>
+                    </motion.div>
                   ))}
                 </div>
               )}
@@ -407,9 +527,6 @@ export default function App() {
           )}
         </AnimatePresence>
       </main>
-
-      {/* Background Decor */}
-      <div className="fixed inset-0 -z-10 bg-[radial-gradient(#E7E5E4_1px,transparent_1px)] [background-size:24px_24px] opacity-40" />
     </div>
   );
 }
@@ -444,39 +561,49 @@ const QuestionCard = ({ question, value, onChange }: QuestionCardProps) => {
 
   return (
     <motion.div 
-      initial={{ opacity: 0, x: 10 }}
-      animate={{ opacity: 1, x: 0 }}
-      className="bg-white rounded-3xl p-8 border border-[#E7E5E4] shadow-sm"
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="space-y-4"
     >
-      <p className="text-lg font-medium mb-6 leading-snug">{question.text}</p>
+      <p className="text-sm font-bold text-slate-700 italic flex gap-3 leading-relaxed">
+        <span className="text-indigo-600 tabular-nums font-black not-italic">{question.id}.</span> 
+        {question.text}
+      </p>
       
       {question.type === 'text' ? (
-        <div className="relative">
+        <div className="relative group">
           <input 
             type="text" 
-            placeholder="Écrivez votre réponse ici..."
+            placeholder="Saisissez votre réponse ici..."
             value={value || ''}
             onChange={(e) => onChange(e.target.value)}
-            className="w-full bg-[#F5F5F4] border-none rounded-2xl p-4 focus:ring-2 focus:ring-[#1C1917] outline-none transition-all placeholder:text-[#A8A29E] font-medium"
+            className="w-full bg-white border border-slate-100 rounded-2xl p-5 focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none transition-all placeholder:text-slate-300 font-medium text-sm shadow-sm group-hover:border-slate-200"
           />
         </div>
       ) : (
-        <div className="grid gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           {question.options?.map((opt) => (
             <button 
               key={opt}
               onClick={() => handleToggle(opt)}
-              className={`text-left p-4 rounded-2xl border transition-all duration-200 flex justify-between items-center group ${
+              className={`text-left p-4 rounded-xl border transition-all flex justify-between items-center group relative overflow-hidden ${
                 isSelected(opt) 
-                ? 'bg-[#1C1917] border-[#1C1917] text-white' 
-                : 'bg-white border-[#E7E5E4] hover:border-[#1C1917] text-[#44403C]'
+                ? 'bg-indigo-50/50 border-indigo-200 ring-1 ring-indigo-200 text-indigo-800' 
+                : 'bg-white border-slate-100 hover:border-indigo-300 text-slate-600 hover:bg-slate-50'
               }`}
             >
-              <span className="font-medium">{opt}</span>
-              <div className={`w-5 h-5 rounded-full border flex items-center justify-center transition-all ${
-                isSelected(opt) ? 'border-white bg-[#1C1917]' : 'border-[#D1D5DB] group-hover:border-[#1C1917]'
+              {isSelected(opt) && (
+                <motion.div 
+                  layoutId="selected-indicator" 
+                  className="absolute left-0 top-0 w-1.5 h-full bg-indigo-600" 
+                />
+              )}
+              <span className={`text-[13px] font-bold tracking-tight pr-4 ${isSelected(opt) ? 'text-indigo-800' : 'text-slate-600'}`}>{opt}</span>
+              
+              <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 transition-all ${
+                isSelected(opt) ? 'border-indigo-600 bg-indigo-600' : 'border-slate-200 group-hover:border-indigo-300'
               }`}>
-                {isSelected(opt) && <div className="w-2 h-2 bg-white rounded-full" />}
+                {isSelected(opt) && <div className="w-1.5 h-1.5 bg-white rounded-full" />}
               </div>
             </button>
           ))}
